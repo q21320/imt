@@ -15,7 +15,7 @@ struct HttpRequest {
 /// 发起 HTTP 请求的函数
 #[tauri::command]
 pub async fn http_request(request: HttpRequest) -> Result<Value, String> {
-    let url: ! = Url::parse(&request.url).map_err(|_| "Invalid URL".to_string())?;
+    let url: Url = Url::parse(&request.url).map_err(|_| "Invalid URL".to_string())?;
     let method: String = request.method.to_uppercase();
     let headers: serde_json::Map<String, Value> = request.headers.as_object().unwrap_or_default().clone();
     let body: String = serde_json::to_string(&request.body).unwrap_or_default();
