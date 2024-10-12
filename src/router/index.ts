@@ -8,38 +8,58 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/components/Menu.vue'),
       redirect: '/user',
+      meta: {
+        icon: "icon-maotai1",
+        title: 'i茅台',
+      },
       children: [
         {
-          path: 'user',
+          path: '/user',
           name: 'user',
-          component: () => import('@/views/user.vue')
+          meta: {
+            icon: "icon-yonghuguanli1",
+            title: '茅台用户管理',
+          },
+          component: () => import('@/views/mt/user.vue')
         },
-
+        {
+          path: '/goods',
+          name: 'goods',
+          meta: {
+            icon: "icon-shangpinliebiao1",
+            title: '茅台商品列表',
+          },
+          component: () => import('@/views/mt/goods.vue')
+        },
+        {
+          path: '/shop',
+          name: 'shop',
+          meta: {
+            icon: "icon-dianpu",
+            title: '茅台店铺管理',
+          },
+          component: () => import('@/views/mt/shop.vue')
+        },
       ]
     },
     {
-      path: '/goods',
-      name: 'goods',
+      path: '/damai',
+      name: 'damai',
       component: () => import('@/components/Menu.vue'),
-      redirect: '/goods/index',
+      redirect: '/damai/damaiIndex',
+      meta: {
+        icon: "icon-damaiwang",
+        title: '大麦',
+      },
       children: [
         {
-          path: 'index',
-          name: 'goodsIndex',
-          component: () => import('@/views/goods.vue')
-        },
-      ]
-    },
-    {
-      path: '/shop',
-      name: 'shop',
-      component: () => import('@/components/Menu.vue'),
-      redirect: '/shop/index',
-      children: [
-        {
-          path: 'index',
-          name: 'shopIndex',
-          component: () => import('@/views/shop.vue')
+          path: '/damai/damaiIndex',
+          name: 'damaiIndex',
+          meta: {
+            icon: "icon-damaiwang",
+            title: '大麦首页',
+          },
+          component: () => import('@/views/damai/index.vue')
         },
       ]
     },

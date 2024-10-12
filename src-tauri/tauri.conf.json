@@ -18,7 +18,9 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "script-src": "'self' 'unsafe-inline' https://at.alicdn.com"
+      }
     }
   },
   "bundle": {

@@ -1,42 +1,42 @@
 <script lang="ts" setup>
-import {
-  PieChartOutlined,
-  DesktopOutlined,
-} from '@ant-design/icons-vue';
-import { ref } from 'vue';
-const collapsed = ref<boolean>(false);
-const selectedKeys = ref<string[]>(['1']);
 
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import router from '../router';
+const route = useRoute()
+const collapsed = ref<boolean>(false);
+const name = route.name as string;
+const selectedKeys = ref<string[]>([name]);
+const menus:any = router.getRoutes().filter(i => i.children.length > 0)
+
+const collapseChange = (collapsed:boolean,type) => {
+  console.log(collapsed)
+  console.log(type)
+}
 </script>
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-sider v-model:collapsed="collapsed" collapsible>
+    <a-layout-sider v-model:collapsed="collapsed" collapsible @collapse="collapseChange">
       <div class="logo" />
       <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-        <a-menu-item key="1">
-          <RouterLink to="/">
-            <pie-chart-outlined />
-            <span>用户管理</span>
-          </RouterLink>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <RouterLink to="/goods">
-            <desktop-outlined />
-            <span>商品列表</span>
-          </RouterLink>
-        </a-menu-item>
-        <a-menu-item key="3">
-          <RouterLink to="/shop">
-            <desktop-outlined />
-            <span>店铺管理</span>
-          </RouterLink>
-        </a-menu-item>
+        <a-sub-menu v-for="i in menus" :key="i.path">
+          <template #title>
+            <i style="padding-right:30px ;" v-if="i.meta?.icon" class="iconfont" :class="i.meta?.icon"></i>
+            <span>{{ i.meta.title }}</span>
+          </template>
+          <a-menu-item v-for="j in i.children" :key="j.name">
+            <RouterLink :to="j.path">
+              <i style="padding-right:30px ;" v-if="j.meta?.icon" class="iconfont" :class="j.meta?.icon"></i>
+              <span>{{ j.meta?.title }}</span>
+            </RouterLink>
+          </a-menu-item>
+        </a-sub-menu>
       </a-menu>
     </a-layout-sider>
     <a-layout>
       <a-layout-content style="margin: 0 16px">
-        <a-breadcrumb style="margin: 8px 0">
-        </a-breadcrumb>
+        <div style="padding: 8px 0">
+        </div>
         <div p-24px style="background-color: #fff;border-radius:4px">
           <router-view>
             <template #default="{ Component }">
@@ -45,9 +45,6 @@ const selectedKeys = ref<string[]>(['1']);
           </router-view>
         </div>
       </a-layout-content>
-      <a-layout-footer style="text-align: center">
-        Ant Design ©2018 Created by Ant UED
-      </a-layout-footer>
     </a-layout>
   </a-layout>
 </template>

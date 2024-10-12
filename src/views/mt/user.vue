@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import md5 from 'md5'
 import CryptoJS from 'crypto-js';
 import { message } from 'ant-design-vue';
+import { invoke } from "@tauri-apps/api/core";
+
 const open = ref(false)
 const open1 = ref(false)
 const formRef = ref()
@@ -60,6 +62,7 @@ const formState1 = ref({
     lat: '',
     lng: '',
 })
+
 const handleOk = () => formRef.value.validate().then((valid: boolean) => (valid && login()));
 const login = async () => {
     const timestamp = Date.now().toString()
@@ -72,7 +75,8 @@ const login = async () => {
         ydLogId: '',
         timestamp
     };
-    const res = await fetch("https://app.moutai519.com.cn/xhr/front/user/register/login", {
+    const res = await invoke("http_request", {
+        url: "https://app.moutai519.com.cn/xhr/front/user/register/login",
         headers: {
             "User-Agent": "iOS;16.3;Apple;?unrecognized?",
             "Content-Type": "application/json",
@@ -91,16 +95,17 @@ const login = async () => {
         },
         method: "POST",
         body: JSON.stringify(params)
-    }).then(res => res.json())
-    if (res.code === 2000) {
-        userList.value = userList.value.filter((item: { idCode: string; }) => item.idCode !== res.data.idCode)
-        res.data.mobile = formState.value.mobile
-        userList.value.push(res.data)
-        localStorage.setItem('userList', JSON.stringify(userList.value))
-        open.value = false
-    } else {
-        message.error(res.message)
-    }
+    })
+    console.log(res);
+    // if (res.code === 2000) {
+    //     userList.value = userList.value.filter((item: { idCode: string; }) => item.idCode !== res.data.idCode)
+    //     res.data.mobile = formState.value.mobile
+    //     userList.value.push(res.data)
+    //     localStorage.setItem('userList', JSON.stringify(userList.value))
+    //     open.value = false
+    // } else {
+    //     message.error(res.message)
+    // }
 }
 
 const sendCode = async () => {
@@ -112,7 +117,8 @@ const sendCode = async () => {
         md5: md5(SALT + formState.value.mobile + timestamp),
         timestamp
     };
-    const res = await fetch("https://app.moutai519.com.cn/xhr/front/user/register/vcode", {
+    const res = await invoke("http_request", {
+        url:"https://app.moutai519.com.cn/xhr/front/user/register/vcode",
         headers: {
             "User-Agent": "iOS;16.3;Apple;?unrecognized?",
             "Content-Type": "application/json",
@@ -131,10 +137,11 @@ const sendCode = async () => {
         },
         method: "POST",
         body: JSON.stringify(params)
-    }).then(res => res.json())
-    if (res.code === 2000) {
-        codeText()
-    }
+    })
+    console.log(res);
+    // if (res.code === 2000) {
+    //     codeText()
+    // }
 }
 
 const codeText = () => {
@@ -220,31 +227,31 @@ const add = async (id: string, record: Record<string, any>) => {
         if (res.code === 2000) {
             keyNum.value++
             add(id, record)
-        }else message.error(res.message)
+        } else message.error(res.message)
     }
 }
 
 
 // AES CBC加密函数
-function encryptAES_CBC(input:string, key:string, iv:string) {
-  // 将字符串转换为字节数组
-  const keyBytes = CryptoJS.enc.Utf8.parse(key);
-  const ivBytes = CryptoJS.enc.Utf8.parse(iv);
+function encryptAES_CBC(input: string, key: string, iv: string) {
+    // 将字符串转换为字节数组
+    const keyBytes = CryptoJS.enc.Utf8.parse(key);
+    const ivBytes = CryptoJS.enc.Utf8.parse(iv);
 
-  // 将输入字符串转换为字节数组
-  const inputBytes = CryptoJS.enc.Utf8.parse(input);
+    // 将输入字符串转换为字节数组
+    const inputBytes = CryptoJS.enc.Utf8.parse(input);
 
-  // 使用 AES-CBC 模式进行加密
-  const encrypted = CryptoJS.AES.encrypt(inputBytes, keyBytes, {
-    iv: ivBytes,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7
-  });
+    // 使用 AES-CBC 模式进行加密
+    const encrypted = CryptoJS.AES.encrypt(inputBytes, keyBytes, {
+        iv: ivBytes,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
 
-  // 将加密结果转换为 Base64 字符串
-  const base64String = encrypted.toString();
+    // 将加密结果转换为 Base64 字符串
+    const base64String = encrypted.toString();
 
-  return base64String;
+    return base64String;
 }
 
 const getNewShopList = async (id: string, province: string, stamp1: number, code: string) => {
